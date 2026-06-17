@@ -50,14 +50,14 @@ export default function Home() {
         <div className="p-10 md:p-14">
           <span className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-5"
             style={{ background: 'rgba(250,243,224,0.15)', color: '#FAF3E0' }}>
-            Tu asistente personal
+            Life happens. We organize it.
           </span>
           <h1 className="text-4xl md:text-5xl font-black leading-tight mb-4" style={{ color: '#FAF3E0' }}>
-            Tu copiloto diario<br />
-            <span style={{ color: '#F28482' }}>para la familia.</span>
+            Welcome to the future<br />
+            <span style={{ color: '#F28482' }}>of family organization.</span>
           </h1>
           <p className="text-lg max-w-lg leading-relaxed mb-8" style={{ color: 'rgba(250,243,224,0.75)' }}>
-            Organiza los 6 mundos de tus hijos en uno solo. Eventos, actividades, recordatorios y mensajes — todo en automático.
+            Managing your family's schedule shouldn't feel like a full-time job. From invitations and extracurricular activities to schedule changes and reminders, everything is automatically organized in one place.
           </p>
           <div className="flex gap-3 flex-wrap">
             <a href="/dashboard"
