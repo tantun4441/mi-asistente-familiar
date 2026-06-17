@@ -11,9 +11,9 @@ export default function Home() {
     Promise.all([
       fetch('/api/events').then(r => r.json()),
       fetch('/api/children').then(r => r.json()),
-    ]).then(([eventsData, childrenData]) => {
-      setEvents(Array.isArray(eventsData) ? eventsData : [])
-      setChildren(Array.isArray(childrenData) ? childrenData : [])
+    ]).then(([e, c]) => {
+      setEvents(Array.isArray(e) ? e : [])
+      setChildren(Array.isArray(c) ? c : [])
       setLoading(false)
     })
   }, [])
@@ -21,70 +21,140 @@ export default function Home() {
   const today = new Date().toISOString().split('T')[0]
   const upcoming = events.filter(e => e.event_date >= today).slice(0, 5)
 
-  if (loading) return (
-    <div className="flex items-center justify-center h-64">
-      <p className="text-slate-400">Cargando...</p>
-    </div>
-  )
+  const features = [
+    {
+      icon: '📅',
+      title: 'Agenda directo en tu calendario',
+      desc: 'Detecta eventos de WhatsApp y los agrega automáticamente a tu Apple Calendar con recordatorio.',
+      color: '#2F5D62',
+    },
+    {
+      icon: '💬',
+      title: 'Responde mensajes automáticamente',
+      desc: 'Recibe avisos de la escuela, ballet o sinagoga y el asistente los procesa sin que tengas que hacer nada.',
+      color: '#F28482',
+    },
+    {
+      icon: '🔄',
+      title: 'Trackea cambios de actividades',
+      desc: 'Si cambia el horario de ballet o se cancela un entrenamiento, te notifica al instante y actualiza el calendario.',
+      color: '#84A98C',
+    },
+  ]
 
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <p className="text-sm text-slate-500">Hijos registrados</p>
-          <p className="text-3xl font-bold text-slate-800 mt-1">{children.length}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <p className="text-sm text-slate-500">Eventos próximos</p>
-          <p className="text-3xl font-bold text-slate-800 mt-1">{upcoming.length}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <p className="text-sm text-slate-500">Total de eventos</p>
-          <p className="text-3xl font-bold text-slate-800 mt-1">{events.length}</p>
+    <div className="space-y-12">
+
+      {/* HERO */}
+      <div className="rounded-3xl overflow-hidden" style={{ background: '#2F5D62' }}>
+        <div className="p-10 md:p-14">
+          <span className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-5"
+            style={{ background: 'rgba(250,243,224,0.15)', color: '#FAF3E0' }}>
+            Tu asistente personal
+          </span>
+          <h1 className="text-4xl md:text-5xl font-black leading-tight mb-4" style={{ color: '#FAF3E0' }}>
+            Tu copiloto diario<br />
+            <span style={{ color: '#F28482' }}>para la familia.</span>
+          </h1>
+          <p className="text-lg max-w-lg leading-relaxed mb-8" style={{ color: 'rgba(250,243,224,0.75)' }}>
+            Organiza los 6 mundos de tus hijos en uno solo. Eventos, actividades, recordatorios y mensajes — todo en automático.
+          </p>
+          <div className="flex gap-3 flex-wrap">
+            <a href="/dashboard"
+              className="font-bold px-6 py-3 rounded-full text-sm transition-all shadow-md"
+              style={{ background: '#F28482', color: '#fff' }}>
+              Ver mis eventos →
+            </a>
+            <a href="/children"
+              className="font-semibold px-6 py-3 rounded-full text-sm transition-all"
+              style={{ background: 'rgba(250,243,224,0.12)', color: '#FAF3E0', border: '1px solid rgba(250,243,224,0.2)' }}>
+              Mis hijos
+            </a>
+          </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-slate-800">Próximos eventos</h2>
-          <a href="/dashboard" className="text-sm text-blue-600 hover:underline">Ver todos</a>
+      {/* FEATURES */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {features.map(f => (
+          <div key={f.title} className="card p-6">
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl mb-4"
+              style={{ background: f.color + '18' }}>
+              {f.icon}
+            </div>
+            <h3 className="font-bold text-base mb-2" style={{ color: '#2F5D62' }}>{f.title}</h3>
+            <p className="text-sm leading-relaxed" style={{ color: '#6b8a8e' }}>{f.desc}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* STATS */}
+      <div className="grid grid-cols-3 gap-4">
+        {[
+          { label: 'Hijos', value: loading ? '—' : children.length, color: '#2F5D62', bg: '#2F5D6212' },
+          { label: 'Esta semana', value: loading ? '—' : upcoming.length, color: '#F28482', bg: '#F2848212' },
+          { label: 'Total eventos', value: loading ? '—' : events.length, color: '#84A98C', bg: '#84A98C12' },
+        ].map(s => (
+          <div key={s.label} className="card p-6">
+            <p className="text-3xl font-black" style={{ color: s.color }}>{s.value}</p>
+            <p className="text-sm mt-1" style={{ color: '#8aabaf' }}>{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* UPCOMING EVENTS */}
+      <div className="card p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-lg font-bold" style={{ color: '#2F5D62' }}>Próximos eventos</h2>
+          <a href="/dashboard" className="text-sm font-semibold transition-colors" style={{ color: '#F28482' }}>
+            Ver todos →
+          </a>
         </div>
-        {upcoming.length === 0 ? (
-          <p className="text-slate-400 text-sm">No hay eventos próximos registrados.</p>
+        {loading ? (
+          <p className="text-sm" style={{ color: '#8aabaf' }}>Cargando...</p>
+        ) : upcoming.length === 0 ? (
+          <div className="text-center py-10">
+            <p className="text-4xl mb-3">📭</p>
+            <p className="text-sm" style={{ color: '#8aabaf' }}>No hay eventos próximos.</p>
+          </div>
         ) : (
           <div className="space-y-3">
             {upcoming.map(event => {
-              const eventWithChild = event as any
+              const ev = event as any
               return (
-                <div key={event.id} className="flex items-start gap-3 p-3 rounded-lg bg-slate-50">
-                  <div
-                    className="w-3 h-3 rounded-full mt-1 flex-shrink-0"
-                    style={{ backgroundColor: eventWithChild.children?.color || '#94a3b8' }}
-                  />
+                <div key={event.id} className="flex items-start gap-4 p-4 rounded-xl transition-all"
+                  style={{ background: '#FAF3E0', border: '1px solid rgba(47,93,98,0.08)' }}>
+                  <div className="w-3 h-3 rounded-full mt-1.5 flex-shrink-0"
+                    style={{ backgroundColor: ev.children?.color || '#84A98C' }} />
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-slate-800 text-sm">{event.title}</p>
-                    {eventWithChild.children && (
-                      <p className="text-xs text-slate-500">{eventWithChild.children.name}</p>
-                    )}
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <p className="font-semibold text-sm" style={{ color: '#2F5D62' }}>{event.title}</p>
+                    {ev.children && <p className="text-xs mt-0.5" style={{ color: '#84A98C' }}>{ev.children.name}</p>}
+                    <p className="text-xs mt-1" style={{ color: '#8aabaf' }}>
                       {new Date(event.event_date + 'T12:00:00').toLocaleDateString('es-MX', {
                         weekday: 'long', month: 'long', day: 'numeric'
                       })}
                       {event.event_time && ` · ${event.event_time}`}
                     </p>
-                    {event.needs_to_bring && (
-                      <p className="text-xs text-amber-600 mt-1">Llevar: {event.needs_to_bring}</p>
-                    )}
-                    {event.dress_code && (
-                      <p className="text-xs text-purple-600 mt-0.5">Vestimenta: {event.dress_code}</p>
-                    )}
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {event.needs_to_bring && (
+                        <span className="text-xs px-2 py-0.5 rounded-full font-medium"
+                          style={{ background: '#F2848220', color: '#c0504e' }}>
+                          📦 {event.needs_to_bring}
+                        </span>
+                      )}
+                      {event.dress_code && (
+                        <span className="text-xs px-2 py-0.5 rounded-full font-medium"
+                          style={{ background: '#84A98C20', color: '#4a7a52' }}>
+                          👗 {event.dress_code}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <span className={`text-xs px-2 py-0.5 rounded-full flex-shrink-0 ${
-                    event.source === 'whatsapp'
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-blue-100 text-blue-700'
-                  }`}>
-                    {event.source === 'whatsapp' ? 'WhatsApp' : 'Manual'}
+                  <span className={`text-xs px-2.5 py-1 rounded-full font-semibold flex-shrink-0`}
+                    style={event.source === 'whatsapp'
+                      ? { background: '#84A98C20', color: '#4a7a52' }
+                      : { background: '#2F5D6220', color: '#2F5D62' }}>
+                    {event.source === 'whatsapp' ? '💬 WA' : '✏️'}
                   </span>
                 </div>
               )
@@ -93,26 +163,37 @@ export default function Home() {
         )}
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
-        <h2 className="text-lg font-semibold text-slate-800 mb-4">Mis hijos</h2>
-        {children.length === 0 ? (
-          <div className="text-center py-6">
-            <p className="text-slate-400 text-sm mb-3">Aún no hay hijos registrados.</p>
-            <a href="/children" className="bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700">
+      {/* CHILDREN */}
+      <div className="card p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-lg font-bold" style={{ color: '#2F5D62' }}>Mis hijos</h2>
+          <a href="/children" className="text-sm font-semibold" style={{ color: '#F28482' }}>
+            Administrar →
+          </a>
+        </div>
+        {loading ? (
+          <p className="text-sm" style={{ color: '#8aabaf' }}>Cargando...</p>
+        ) : children.length === 0 ? (
+          <div className="text-center py-10">
+            <p className="text-4xl mb-3">👨‍👩‍👧‍👦</p>
+            <p className="text-sm mb-4" style={{ color: '#8aabaf' }}>Aún no hay hijos registrados.</p>
+            <a href="/children" className="text-white text-sm px-5 py-2.5 rounded-full font-semibold"
+              style={{ background: '#2F5D62' }}>
               Agregar hijo
             </a>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {children.map(child => (
-              <div key={child.id} className="flex items-center gap-3 p-3 rounded-lg bg-slate-50">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
+              <div key={child.id} className="flex items-center gap-3 p-4 rounded-xl"
+                style={{ background: '#FAF3E0', border: '1px solid rgba(47,93,98,0.08)' }}>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-sm flex-shrink-0"
                   style={{ backgroundColor: child.color }}>
                   {child.name.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p className="font-medium text-slate-800 text-sm">{child.name}</p>
-                  <p className="text-xs text-slate-500">{child.activities?.length || 0} actividades</p>
+                  <p className="font-semibold text-sm" style={{ color: '#2F5D62' }}>{child.name}</p>
+                  <p className="text-xs" style={{ color: '#84A98C' }}>{child.activities?.length || 0} actividades</p>
                 </div>
               </div>
             ))}
